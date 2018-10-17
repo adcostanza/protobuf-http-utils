@@ -6,32 +6,7 @@
 
     <groupId>com.acostanza</groupId>
     <artifactId>protobuf-http-utils</artifactId>
-    <version>0.0.1</version>
-
-    <name>Protobuf HTTP Utils</name>
-    <description>A set of utils that makes it easy to have a typesafe JSON HTTP API using protobuf</description>
-    <url>https://github.com/adcostanza/protobuf-http-utils</url>
-
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <id>acostanza</id>
-            <name>Adam Costanza</name>
-            <email>adam@acostanza.com</email>
-            <url>http://acostanza.com</url>
-        </developer>
-    </developers>
-
-    <scm>
-        <url>https://github.com/adcostanza/protobuf-http-utils</url>
-    </scm>
+    <version>1.0-SNAPSHOT</version>
 
     <distributionManagement>
         <snapshotRepository>
