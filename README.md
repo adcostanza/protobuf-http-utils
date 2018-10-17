@@ -1,0 +1,2 @@
+# Protobuf HTTP Utils for Java
+Still very much a work in progress, but right now these utils make it extremely easy to make a typesafe HTTP JSON API using protobuf as the data model. More utilities to be added related to JSON, HTTP APIs, and protobuf. This current utility uses Spark web microframework to serve the HTTP API with some sprinkled protobuf goodness.
