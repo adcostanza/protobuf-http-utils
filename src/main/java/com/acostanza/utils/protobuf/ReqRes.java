@@ -1,4 +1,4 @@
-package com.acostanza.utils.protos;
+package com.acostanza.utils.protobuf;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
