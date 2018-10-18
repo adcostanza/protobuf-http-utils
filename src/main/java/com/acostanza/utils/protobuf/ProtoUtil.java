@@ -52,10 +52,11 @@ public class ProtoUtil {
         return (Map<String, Object>) gson.fromJson(toJSON(proto), Map.class);
     }
 
-    public static <T extends GeneratedMessageV3> void compareRequestMapTypesToProtoTypes(Map<String, Object> map, T proto) throws InvalidProtocolBufferException {
+    public static <T extends GeneratedMessageV3> void compareRequestMapTypesToProtoTypes(Map<String, Object> map, T proto, String... whiteListProperties)
+            throws InvalidProtocolBufferException {
         List<String> errors = new ArrayList<>();
         ProtoObject protoObject = fromProto(proto);
-        checkValue(protoObject, map, errors, protoObject.getName());
+        checkValue(protoObject, map, errors, protoObject.getName(), whiteListProperties);
 
         if (errors.size() > 0) {
             throw new InvalidProtocolBufferException(errors.toString());
@@ -63,13 +64,16 @@ public class ProtoUtil {
 
     }
 
-    private static void checkValue(ProtoObject protoObject, Map<String, Object> map, List<String> errors, String path) {
+    private static void checkValue(ProtoObject protoObject, Map<String, Object> map, List<String> errors, String path, String... whitelistProperties) {
         if (!protoObject.isMessage()) {
             try {
                 if (!map.get(protoObject.getName()).getClass().equals(protoObject.getType())) {
                     errors.add(String.format("the property %s must be a %s", path, protoObject.getProtoType().toString()));
                 }
             } catch (NullPointerException e) {
+                if (Arrays.asList(whitelistProperties).contains(protoObject.getName())) {
+                    return;
+                }
                 List<String> childProperties = protoObject.getChildFields()
                         .stream()
                         .map(ProtoObject::nameTypePairString)
@@ -97,6 +101,9 @@ public class ProtoUtil {
             try {
                 Map<String, Object> childMap = (Map<String, Object>) map.get(protoObject.getName());
                 if (childMap == null) {
+                    if (Arrays.asList(whitelistProperties).contains(protoObject.getName())) {
+                        return;
+                    }
                     List<String> childProperties = protoObject.getChildFields()
                             .stream()
                             .map(ProtoObject::nameTypePairString)
@@ -146,6 +153,9 @@ public class ProtoUtil {
                 if (childProperties.size() > 0) {
                     errors.add(String.format("the property %s must be a %s with child properties %s",
                             path, protoObject.getType().getTypeName(), childProperties));
+                    return;
+                }
+                if (Arrays.asList(whitelistProperties).contains(protoObject.getName())) {
                     return;
                 }
                 errors.add(String.format("the property %s is required and must be a %s",
