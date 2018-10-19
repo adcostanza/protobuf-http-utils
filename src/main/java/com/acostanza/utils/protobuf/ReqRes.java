@@ -49,10 +49,12 @@ public class ReqRes<T extends GeneratedMessageV3, R extends GeneratedMessageV3> 
 
     public ReqRes register(BiFunction<Request, T, R> serviceFunction, String... whitelistProperties) {
         Spark.post(getName(), (req, res) -> {
+            emptyRequestBuilder = emptyRequestBuilder.clear();
             Gson gson = new Gson();
             try {
                 ProtoUtil.compareRequestMapTypesToProtoTypes(gson.fromJson(req.body(), Map.class), getEmptyRequestObject(), whitelistProperties);
-                return ProtoUtil.toJSON(serviceFunction.apply(req, ProtoUtil.fromJSON(req.body(), emptyRequestBuilder)));
+                R returnValue = serviceFunction.apply(req, ProtoUtil.fromJSON(req.body(), emptyRequestBuilder));
+                return ProtoUtil.toJSON(returnValue);
             } catch (InvalidProtocolBufferException e) {
                 halt(422, e.getMessage());
                 return null;
