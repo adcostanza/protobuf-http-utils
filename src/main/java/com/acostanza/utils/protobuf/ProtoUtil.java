@@ -52,10 +52,11 @@ public class ProtoUtil {
         return (Map<String, Object>) gson.fromJson(toJSON(proto), Map.class);
     }
 
-    public static <T extends GeneratedMessageV3> void compareRequestMapTypesToProtoTypes(Map<String, Object> map, T proto) throws InvalidProtocolBufferException {
+    public static <T extends GeneratedMessageV3> void compareRequestMapTypesToProtoTypes(Map<String, Object> map, T proto, String... whiteListProperties)
+            throws InvalidProtocolBufferException {
         List<String> errors = new ArrayList<>();
         ProtoObject protoObject = fromProto(proto);
-        checkValue(protoObject, map, errors, protoObject.getName());
+        checkValue(protoObject, map, errors, protoObject.getName(), Arrays.asList(whiteListProperties));
 
         if (errors.size() > 0) {
             throw new InvalidProtocolBufferException(errors.toString());
@@ -63,25 +64,35 @@ public class ProtoUtil {
 
     }
 
-    private static void checkValue(ProtoObject protoObject, Map<String, Object> map, List<String> errors, String path) {
+    private static void checkValue(ProtoObject protoObject, Map<String, Object> map, List<String> errors, String path, List<String> whitelistProperties) {
+        if (whitelistProperties.contains(protoObject.getName())) {
+            return;
+        }
         if (!protoObject.isMessage()) {
             try {
                 if (!map.get(protoObject.getName()).getClass().equals(protoObject.getType())) {
                     errors.add(String.format("the property %s must be a %s", path, protoObject.getProtoType().toString()));
                 }
             } catch (NullPointerException e) {
-                errors.add(String.format("%s is a required property with child properties %s",
-                        path, protoObject.getChildFields()
-                                .stream()
-                                .map(ProtoObject::nameTypePairString)
-                                .collect(Collectors.toList())));
+                List<String> childProperties = protoObject.getChildFields()
+                        .stream()
+                        .map(ProtoObject::nameTypePairString)
+                        .collect(Collectors.toList());
+                if (childProperties.size() > 0) {
+                    errors.add(String.format("the property %s must be a %s with child properties %s",
+                            path, protoObject.getType().getTypeName(), childProperties));
+                    return;
+                }
+                errors.add(String.format("the property %s is required and must be a %s",
+                        path, protoObject.getType().getTypeName()));
+                return;
             }
             return;
         }
 
         if (protoObject.topLevelObject) {
             for (ProtoObject child : protoObject.getChildFields()) {
-                checkValue(child, map, errors, path + "." + child.getName());
+                checkValue(child, map, errors, path + "." + child.getName(), whitelistProperties);
             }
             return;
         }
@@ -90,11 +101,24 @@ public class ProtoUtil {
             try {
                 Map<String, Object> childMap = (Map<String, Object>) map.get(protoObject.getName());
                 if (childMap == null) {
-                    errors.add(String.format("%s is a required property with child properties %s", path,
-                            protoObject.getChildFields()
-                                    .stream()
-                                    .map(ProtoObject::nameTypePairString)
-                                    .collect(Collectors.toList())));
+                    if (Arrays.asList(whitelistProperties).contains(protoObject.getName())) {
+                        return;
+                    }
+                    List<String> childProperties = protoObject.getChildFields()
+                            .stream()
+                            .map(ProtoObject::nameTypePairString)
+                            .collect(Collectors.toList());
+                    if (childProperties.size() > 0) {
+                        errors.add(String.format("the property %s is required and must be a %s with child properties %s",
+                                path, protoObject.getType().getTypeName(), protoObject.getChildFields()
+                                        .stream()
+                                        .map(ProtoObject::nameTypePairString)
+                                        .collect(Collectors.toList())));
+                        return;
+                    }
+
+                    errors.add(String.format("the property %s is required and must be a %s",
+                            path, protoObject.getType().getTypeName()));
                     return;
                 }
                 Set<String> requestKeys = childMap.keySet();
@@ -119,14 +143,21 @@ public class ProtoUtil {
                 }
 
                 for (ProtoObject child : protoObject.getChildFields()) {
-                    checkValue(child, childMap, errors, path + "." + child.getName());
+                    checkValue(child, childMap, errors, path + "." + child.getName(), whitelistProperties);
                 }
             } catch (ClassCastException e) {
-                errors.add(String.format("the property %s must be a %s with child properties %s",
-                        path, protoObject.getType().getTypeName(), protoObject.getChildFields()
-                                .stream()
-                                .map(ProtoObject::nameTypePairString)
-                                .collect(Collectors.toList())));
+                List<String> childProperties = protoObject.getChildFields()
+                        .stream()
+                        .map(ProtoObject::nameTypePairString)
+                        .collect(Collectors.toList());
+                if (childProperties.size() > 0) {
+                    errors.add(String.format("the property %s must be a %s with child properties %s",
+                            path, protoObject.getType().getTypeName(), childProperties));
+                    return;
+                }
+                errors.add(String.format("the property %s is required and must be a %s",
+                        path, protoObject.getType().getTypeName()));
+
             }
 
         }

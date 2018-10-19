@@ -4,9 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;
+import spark.Request;
 import spark.Spark;
 
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static spark.Spark.halt;
@@ -45,12 +47,12 @@ public class ReqRes<T extends GeneratedMessageV3, R extends GeneratedMessageV3> 
         return new ReqRes<>(name, emptyRequestObject, (T.Builder) emptyRequestObject.toBuilder(), emptyResponseObject);
     }
 
-    public void register(Function<T, R> serviceFunction) {
+    public ReqRes register(BiFunction<Request, T, R> serviceFunction, String... whitelistProperties) {
         Spark.post(getName(), (req, res) -> {
             Gson gson = new Gson();
             try {
-                ProtoUtil.compareRequestMapTypesToProtoTypes(gson.fromJson(req.body(), Map.class), getEmptyRequestObject());
-                return ProtoUtil.toJSON(serviceFunction.apply(ProtoUtil.fromJSON(req.body(), emptyRequestBuilder)));
+                ProtoUtil.compareRequestMapTypesToProtoTypes(gson.fromJson(req.body(), Map.class), getEmptyRequestObject(), whitelistProperties);
+                return ProtoUtil.toJSON(serviceFunction.apply(req, ProtoUtil.fromJSON(req.body(), emptyRequestBuilder)));
             } catch (InvalidProtocolBufferException e) {
                 halt(422, e.getMessage());
                 return null;
@@ -59,6 +61,7 @@ public class ReqRes<T extends GeneratedMessageV3, R extends GeneratedMessageV3> 
                 return null;
             }
         });
+        return this;
     }
 
 }
