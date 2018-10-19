@@ -6,7 +6,7 @@
 
     <groupId>com.acostanza</groupId>
     <artifactId>protobuf-http-utils</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.6</version>
 
     <name>Protobuf HTTP Utils</name>
     <description>A set of utils that makes it easy to have a typesafe JSON HTTP API using protobuf</description>
