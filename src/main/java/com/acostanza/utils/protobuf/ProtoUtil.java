@@ -68,8 +68,21 @@ public class ProtoUtil {
         if (whitelistProperties.contains(protoObject.getName())) {
             return;
         }
+
+        //list validation
+        if (List.class.isAssignableFrom((Class) protoObject.getType())) {
+            try {
+                if (!List.class.isAssignableFrom(map.get(protoObject.getName()).getClass())) {
+                    errors.add(String.format("the property %s must be a list of %s", path, protoObject.getProtoType().toString()));
+                }
+            } catch (NullPointerException e) {
+                errorMissingField(protoObject, errors, path);
+            }
+            return;
+        }
+
         if (!protoObject.isMessage()) {
-            checkMessage(protoObject, map, errors, path);
+            checkProperty(protoObject, map, errors, path);
         }
 
         if (protoObject.topLevelObject) {
@@ -84,7 +97,7 @@ public class ProtoUtil {
         }
     }
 
-    private static void checkMessage(ProtoObject protoObject, Map<String, Object> map, List<String> errors, String path) {
+    private static void checkProperty(ProtoObject protoObject, Map<String, Object> map, List<String> errors, String path) {
         try {
             if (!map.get(protoObject.getName()).getClass().equals(protoObject.getType())) {
                 errors.add(String.format("the property %s must be a %s", path, protoObject.getProtoType().toString()));
