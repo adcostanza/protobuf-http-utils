@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HttpServiceUtil {
+    public static void main(String... args) {
+        generateService(args[0]);
+    }
+
     public static void generateService(String protoLocation) {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         InputStream is = classloader.getResourceAsStream(protoLocation);
