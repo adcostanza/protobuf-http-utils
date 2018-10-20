@@ -142,8 +142,11 @@ public class ProtoUtil {
             return;
         }
 
+        String typeName = protoObject.getType().getTypeName();
+        typeName = typeName.startsWith("java.lang.") ? protoObject.getProtoType().toString() : typeName;
+
         errors.add(String.format("the property %s is required and must be a %s",
-                path, protoObject.getType().getTypeName()));
+                path, typeName));
         return;
     }
 
