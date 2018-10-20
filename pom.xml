@@ -6,7 +6,7 @@
 
     <groupId>com.acostanza</groupId>
     <artifactId>protobuf-http-utils</artifactId>
-    <version>0.0.6</version>
+    <version>0.0.7</version>
 
     <name>Protobuf HTTP Utils</name>
     <description>A set of utils that makes it easy to have a typesafe JSON HTTP API using protobuf</description>
@@ -46,6 +46,12 @@
 
 
     <dependencies>
+        <dependency>
+            <groupId>com.squareup</groupId>
+            <artifactId>javapoet</artifactId>
+            <version>1.11.1</version>
+        </dependency>
+
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
