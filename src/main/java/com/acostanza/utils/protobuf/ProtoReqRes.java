@@ -38,7 +38,7 @@ public class ProtoReqRes {
         serviceFile = serviceFile + "public abstract class HttpService {\n";
        serviceFile = serviceFile + "public final void bindService() { ServiceBinder.bindService(this); }\n";
         for (ProtoReqRes reqRes : reqResList) {
-            serviceFile = serviceFile + String.format("public abstract %s %s(SparkReqRes session, %s request);\n",
+            serviceFile = serviceFile + String.format("public abstract %s %s(SparkReqRes reqRes, %s request);\n",
                     reqRes.getResponseClassName(),
                     reqRes.getRouteName(),
                     reqRes.getRequestClassName());

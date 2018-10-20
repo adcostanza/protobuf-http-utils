@@ -1,7 +1,6 @@
 package com.acostanza.utils.protobuf;
 
 import com.google.protobuf.GeneratedMessageV3;
-import spark.Session;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -16,9 +15,9 @@ public class ServiceBinder {
                 .getMethods())
                 .filter(method -> GeneratedMessageV3.class.isAssignableFrom(method.getReturnType()))
                 .map(method -> {
-                    BiFunction<Session, ?, ?> serviceFunction = (session, body) -> {
+                    BiFunction<SparkReqRes, ?, ?> serviceFunction = (reqRes, request) -> {
                         try {
-                            return method.invoke(service, session, body);
+                            return method.invoke(service, reqRes, request);
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             throw new RuntimeException(e);
                         } catch (spark.HaltException e) {
