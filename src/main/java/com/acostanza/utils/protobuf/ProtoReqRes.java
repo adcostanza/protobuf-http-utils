@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+//TODO RENAME THIS
 public class ProtoReqRes {
     private String routeName;
     private String requestClassName;
@@ -31,11 +32,12 @@ public class ProtoReqRes {
         String packageName = packageNames.get(0);
 
         String serviceFile = String.format("package %s;\n", packageName);
-        serviceFile = serviceFile + "import com.acostanza.utils.protobuf.BindableService;\n";
+        serviceFile = serviceFile + "import com.acostanza.utils.protobuf.ServiceBinder;\n";
         serviceFile = serviceFile + String.format("import %s.*;\n\n", packageName);
-        serviceFile = serviceFile + "public interface HttpService extends BindableService {\n";
+        serviceFile = serviceFile + "public abstract class HttpService {\n";
+       serviceFile = serviceFile + "public final void bindService(Class<?> clazz) { ServiceBinder.bindService(clazz); }\n";
         for (ProtoReqRes reqRes : reqResList) {
-            serviceFile = serviceFile + String.format("public %s %s(%s request);\n",
+            serviceFile = serviceFile + String.format("public abstract %s %s(%s request);\n",
                     reqRes.getResponseClassName(),
                     reqRes.getRouteName(),
                     reqRes.getRequestClassName());
