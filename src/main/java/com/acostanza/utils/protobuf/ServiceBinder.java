@@ -16,7 +16,7 @@ public class ServiceBinder {
                 .map(method -> {
                     return new ProtobufRequest(
                             method.getName(),
-                            method.getParameterTypes()[0],
+                            method.getParameterTypes()[1],
                             method.getReturnType(),
                             (session, body) -> {
                                 try {
