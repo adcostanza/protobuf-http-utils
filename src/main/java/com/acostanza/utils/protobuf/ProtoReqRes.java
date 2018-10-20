@@ -32,12 +32,13 @@ public class ProtoReqRes {
         String packageName = packageNames.get(0);
 
         String serviceFile = String.format("package %s;\n", packageName);
+        serviceFile = serviceFile + "import spark.Session;\n";
         serviceFile = serviceFile + "import com.acostanza.utils.protobuf.ServiceBinder;\n";
         serviceFile = serviceFile + String.format("import %s.*;\n\n", packageName);
         serviceFile = serviceFile + "public abstract class HttpService {\n";
        serviceFile = serviceFile + "public final void bindService(Class<?> clazz) { ServiceBinder.bindService(clazz); }\n";
         for (ProtoReqRes reqRes : reqResList) {
-            serviceFile = serviceFile + String.format("public abstract %s %s(%s request);\n",
+            serviceFile = serviceFile + String.format("public abstract %s %s(Session session, %s request);\n",
                     reqRes.getResponseClassName(),
                     reqRes.getRouteName(),
                     reqRes.getRequestClassName());
