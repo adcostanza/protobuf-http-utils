@@ -21,6 +21,8 @@ public class ServiceBinder {
                             return method.invoke(service, session, body);
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             throw new RuntimeException(e);
+                        } catch (spark.HaltException e) {
+                            return null;
                         }
                     };
 
