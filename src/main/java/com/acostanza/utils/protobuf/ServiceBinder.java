@@ -20,7 +20,7 @@ public class ServiceBinder {
                             method.getReturnType(),
                             (session, body) -> {
                                 try {
-                                    return method.invoke(body);
+                                    return method.invoke(session, body);
                                 } catch (IllegalAccessException | InvocationTargetException e) {
                                     throw new RuntimeException(e);
                                 }
