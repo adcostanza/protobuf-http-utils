@@ -1,9 +1,9 @@
 package com.acostanza.utils.protobuf;
 
+import com.google.protobuf.Empty;
 import com.google.protobuf.GeneratedMessageV3;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -15,9 +15,13 @@ public class ServiceBinder {
                 .getMethods())
                 .filter(method -> GeneratedMessageV3.class.isAssignableFrom(method.getReturnType()))
                 .map(method -> {
-                    BiFunction<SparkReqRes, ?, ?> serviceFunction = (reqRes, request) -> {
+                    BiFunction<ReqRes, ?, ?> serviceBiFunction = (reqRes, body) -> {
                         try {
-                            return method.invoke(service, reqRes, request);
+                            Object result = method.invoke(service, reqRes, body);
+                            if (result == null) {
+                                return Empty.getDefaultInstance();
+                            }
+                            return result;
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             throw new RuntimeException(e);
                         } catch (spark.HaltException e) {
@@ -29,7 +33,7 @@ public class ServiceBinder {
                             method.getName(),
                             method.getParameterTypes()[1],
                             method.getReturnType(),
-                            serviceFunction);
+                            serviceBiFunction);
                 })
                 .collect(Collectors.toList());
 
