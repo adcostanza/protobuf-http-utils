@@ -1,9 +1,6 @@
 package com.acostanza.utils.protobuf;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,13 +11,8 @@ public class HttpServiceUtil {
     }
 
     public static void generateService(String protoLocation) {
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        InputStream is = classloader.getResourceAsStream(protoLocation);
-        InputStreamReader streamReader = new InputStreamReader(is, StandardCharsets.UTF_8);
-        BufferedReader reader = new BufferedReader(streamReader);
-
         List<ProtoReqRes> protoReqResList = new ArrayList<>();
-        try {
+        try (BufferedReader reader = new BufferedReader(new FileReader(protoLocation))) {
             String packageName = "";
             for (String line; (line = reader.readLine()) != null; ) {
                 // Process line

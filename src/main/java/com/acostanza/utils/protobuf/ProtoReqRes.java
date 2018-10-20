@@ -1,32 +1,21 @@
 package com.acostanza.utils.protobuf;
 
-import com.google.protobuf.GeneratedMessageV3;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
-
-import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProtoReqRes {
     private String routeName;
-    private Class<?> requestClass;
-    private Class<?> responseClass;
+    private String requestClassName;
+    private String responseClassName;
     private String packageName;
 
     public ProtoReqRes(String routeName, String packageName, String requestClassName, String responseClassName) {
-        try {
-            this.routeName = routeName;
-            this.packageName = packageName;
-            this.requestClass = Class.forName(requestClassName);
-            this.responseClass = Class.forName(responseClassName);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        this.routeName = routeName;
+        this.packageName = packageName;
+        this.requestClassName = requestClassName;
+        this.responseClassName = responseClassName;
     }
 
     public static void generateHttpService(List<ProtoReqRes> reqResList) {
@@ -41,28 +30,21 @@ public class ProtoReqRes {
         }
         String packageName = packageNames.get(0);
 
-        List<MethodSpec> methods = new ArrayList<>();
+        String serviceFile = String.format("package %s;\n", packageName);
+        serviceFile = serviceFile + String.format("import %s.*;\n", packageName);
+        serviceFile = serviceFile + "public interface HttpService {\n";
         for (ProtoReqRes reqRes : reqResList) {
-            MethodSpec method = MethodSpec.methodBuilder(reqRes.getRouteName())
-                    .addParameter(reqRes.getRequestClass(), "request")
-                    .returns(reqRes.getResponseClass())
-                    .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                    .build();
-            methods.add(method);
+            serviceFile = serviceFile + String.format("public %s %s(%s request);\n",
+                    reqRes.getResponseClassName(),
+                    reqRes.getRouteName(),
+                    reqRes.getRequestClassName());
         }
 
-        TypeSpec helloWorld = TypeSpec.interfaceBuilder("HttpService")
-                .addModifiers(Modifier.PUBLIC)
-                .addMethods(methods)
-                .build();
-
-
-        JavaFile javaFile = JavaFile.builder(packageName, helloWorld)
-                .build();
+        serviceFile = serviceFile + "}";
 
         try {
-            PrintWriter writer = new PrintWriter("src/main/java/protos/HttpService.java", "UTF-8");
-            javaFile.writeTo(writer);
+            PrintWriter writer = new PrintWriter(String.format("src/main/java/%s/HttpService.java", packageName.replace(".", "/")), "UTF-8");
+            writer.print(serviceFile);
             writer.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -77,11 +59,11 @@ public class ProtoReqRes {
         return packageName;
     }
 
-    public Class<?> getRequestClass() {
-        return requestClass;
+    public String getRequestClassName() {
+        return requestClassName;
     }
 
-    public Class<?> getResponseClass() {
-        return responseClass;
+    public String getResponseClassName() {
+        return responseClassName;
     }
 }
