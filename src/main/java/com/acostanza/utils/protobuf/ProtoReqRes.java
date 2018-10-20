@@ -31,8 +31,9 @@ public class ProtoReqRes {
         String packageName = packageNames.get(0);
 
         String serviceFile = String.format("package %s;\n", packageName);
-        serviceFile = serviceFile + String.format("import %s.*;\n", packageName);
-        serviceFile = serviceFile + "public interface HttpService {\n";
+        serviceFile = serviceFile + "import com.acostanza.utils.protobuf.BindableService;\n";
+        serviceFile = serviceFile + String.format("import %s.*;\n\n", packageName);
+        serviceFile = serviceFile + "public interface HttpService extends BindableService {\n";
         for (ProtoReqRes reqRes : reqResList) {
             serviceFile = serviceFile + String.format("public %s %s(%s request);\n",
                     reqRes.getResponseClassName(),
