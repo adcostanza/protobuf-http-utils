@@ -1,15 +1,25 @@
 package com.acostanza.utils.protobuf;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.function.BiFunction;
 
 public class Middleware {
-//    //string is route name
-//    private final static List<BiFunction<String, ReqRes, ?>>
-//
-//    public static void intercept() {
-//
-//    }
+    private BiFunction<String, ReqRes, Boolean> middleware;
+    private int statusOnFail = 401; //default unauthorized
+
+    public Middleware(BiFunction<String, ReqRes, Boolean> middleware, int statusOnFail) {
+        this.middleware = middleware;
+        this.statusOnFail = statusOnFail;
+    }
+
+    public Middleware(BiFunction<String, ReqRes, Boolean> middleware) {
+        this.middleware = middleware;
+    }
+
+    public BiFunction<String, ReqRes, Boolean> getMiddleware() {
+        return middleware;
+    }
+
+    public int getStatusOnFail() {
+        return statusOnFail;
+    }
 }
