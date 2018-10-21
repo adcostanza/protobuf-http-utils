@@ -18,15 +18,6 @@ public class ServiceBinder {
                 .map(method -> {
                     BiFunction<ReqRes, ?, ?> serviceBiFunction = (reqRes, body) -> {
                         try {
-                            //apply middleware first
-                            for (Middleware middleware : ServiceMiddleware.get()) {
-                                Boolean proceed = middleware.getMiddleware().apply(method.getName(), reqRes);
-                                if (!proceed) {
-                                    reqRes.getResponse().status(middleware.getStatusOnFail());
-                                    return Empty.getDefaultInstance();
-                                }
-                            }
-
                             Object result = method.invoke(service, reqRes, body);
                             if (result == null) {
                                 return Empty.getDefaultInstance();

@@ -2,6 +2,7 @@ package com.acostanza.utils.protobuf;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.google.protobuf.Empty;
 import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;
 import spark.Spark;
@@ -53,10 +54,20 @@ public class ProtobufRequest<T extends GeneratedMessageV3, R extends GeneratedMe
         Spark.post(getName(), (req, res) -> {
             emptyRequestBuilder = emptyRequestBuilder.clear();
             Gson gson = new Gson();
+            ReqRes reqRes = new ReqRes(req, res);
             try {
+                //apply middleware first
+                for (Middleware middleware : ServiceMiddleware.get()) {
+                    Boolean proceed = middleware.getMiddleware().apply(getName(), reqRes);
+                    if (!proceed) {
+                        halt(middleware.getStatusOnFail());
+                        return null;
+                    }
+                }
+
                 Map<String, Object> bodyAsMap = gson.fromJson(req.body(), Map.class);
                 ProtoUtil.compareRequestMapTypesToProtoTypes(bodyAsMap, (T) emptyRequestBuilder.build(), whitelistProperties);
-                R returnValue = serviceBiFunction.apply(new ReqRes(req, res), ProtoUtil.fromJSON(req.body(), emptyRequestBuilder));
+                R returnValue = serviceBiFunction.apply(reqRes, ProtoUtil.fromJSON(req.body(), emptyRequestBuilder));
                 return ProtoUtil.toJSON(returnValue);
             } catch (InvalidProtocolBufferException e) {
                 halt(422, e.getMessage());
