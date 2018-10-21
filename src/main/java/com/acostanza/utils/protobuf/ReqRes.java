@@ -34,8 +34,4 @@ public class ReqRes {
     public void setSession(String key, Object value) {
         session.attribute(key, value);
     }
-
-    public void throwStatus(int status) {
-        this.response.status(status);
-    }
 }
