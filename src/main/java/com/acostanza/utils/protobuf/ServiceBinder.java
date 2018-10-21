@@ -2,6 +2,7 @@ package com.acostanza.utils.protobuf;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.GeneratedMessageV3;
+import spark.HaltException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -22,10 +23,12 @@ public class ServiceBinder {
                                 return Empty.getDefaultInstance();
                             }
                             return result;
-                        } catch (IllegalAccessException | InvocationTargetException e) {
+                        } catch (IllegalAccessException e) {
                             throw new RuntimeException(e);
-                        } catch (spark.HaltException e) {
-                            return null;
+                        } catch (InvocationTargetException e) { //any exception thrown by method, i.e. a halt probably
+                            int status = ((HaltException) e.getTargetException()).statusCode();
+                            reqRes.getResponse().status(status);
+                            return Empty.getDefaultInstance();
                         }
                     };
 
@@ -36,7 +39,5 @@ public class ServiceBinder {
                             serviceBiFunction);
                 })
                 .collect(Collectors.toList());
-
-        String breakpoint = "Adf";
     }
 }
