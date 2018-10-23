@@ -2,7 +2,6 @@ package com.acostanza.utils.protobuf;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.google.protobuf.Empty;
 import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;
 import spark.Spark;

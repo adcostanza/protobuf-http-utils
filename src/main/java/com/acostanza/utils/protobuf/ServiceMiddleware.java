@@ -1,7 +1,6 @@
 package com.acostanza.utils.protobuf;
 
 import java.util.*;
-import java.util.function.BiFunction;
 
 public class ServiceMiddleware {
     //string is route name

@@ -1,10 +1,5 @@
 package com.acostanza.utils.protobuf;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
-import java.util.stream.Collectors;
-
 //TODO RENAME THIS
 public class ProtoReqRes {
     private String routeName;
