@@ -18,7 +18,7 @@ public class ServiceBinder {
      * called from the HttpService abstract class, this creates BiFunctions based on the
      * user defined service that extends the HttpService and passes that BiFunction and route information
      * to the ProtobufRequest which creates a POST route automatically for us.
-     * @param service
+     * @param service the service to bind
      */
     public static void bindService(Object service) {
         List<ProtobufRequest> routeNames = Stream.of(service.getClass()

@@ -59,7 +59,7 @@ public class ProtoUtil {
      * @param builder the builder of the message to convert the json into
      * @param <T> the class of the message that will be returned after conversion
      * @return a protobuf message with its fields completed per the json string
-     * @throws InvalidProtocolBufferException
+     * @throws InvalidProtocolBufferException if the json is the wrong structure
      */
     public static <T extends GeneratedMessageV3> T fromJSON(String json, T.Builder builder) throws InvalidProtocolBufferException {
         JsonFormat.parser().ignoringUnknownFields().merge(json, builder);
@@ -71,18 +71,18 @@ public class ProtoUtil {
      * @param proto the protobuf message to convert
      * @param <T> the class of the protobuf message to convert
      * @return a JSON string with the fields of the protobuf message
-     * @throws InvalidProtocolBufferException
+     * @throws InvalidProtocolBufferException if there is an error
      */
     public static <T extends GeneratedMessageV3> String toJSON(T proto) throws InvalidProtocolBufferException {
         return JsonFormat.printer().print(proto);
     }
 
     /**
-     * convert protobuf message to a Map<String, Object>
+     * convert protobuf message to a Map String, Object
      * @param proto the protobuf message to convert
      * @param <T> the class of the protobuf message to convert
-     * @return a Map<String,Object> equivalent to the protobuf message
-     * @throws InvalidProtocolBufferException
+     * @return a Map String,Object  equivalent to the protobuf message
+     * @throws InvalidProtocolBufferException if there is an error
      */
     public static <T extends GeneratedMessageV3> Map<String, Object> toMap(T proto) throws InvalidProtocolBufferException {
         Gson gson = new Gson();

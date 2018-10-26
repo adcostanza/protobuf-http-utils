@@ -16,7 +16,8 @@ import java.security.spec.X509EncodedKeySpec;
 public class AsymmetricCryptography {
 
     // https://docs.oracle.com/javase/8/docs/api/java/security/spec/PKCS8EncodedKeySpec.html
-    public static PrivateKey getPrivate(String filename) throws Exception {
+    public static PrivateKey getPrivate() throws Exception {
+        String filename = "keys/private";
         byte[] keyBytes = Files.readAllBytes(new File(filename).toPath());
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
         KeyFactory kf = KeyFactory.getInstance("RSA");
@@ -24,7 +25,8 @@ public class AsymmetricCryptography {
     }
 
     // https://docs.oracle.com/javase/8/docs/api/java/security/spec/X509EncodedKeySpec.html
-    public static PublicKey getPublic(String filename) throws Exception {
+    public static PublicKey getPublic() throws Exception {
+        String filename = "keys/public";
         byte[] keyBytes = Files.readAllBytes(new File(filename).toPath());
         X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
         KeyFactory kf = KeyFactory.getInstance("RSA");

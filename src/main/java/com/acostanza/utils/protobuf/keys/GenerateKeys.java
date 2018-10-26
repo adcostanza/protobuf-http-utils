@@ -55,10 +55,10 @@ public class GenerateKeys {
     public static KeyPair generateKeys() {
         GenerateKeys gk;
         try {
-            gk = new GenerateKeys(1024);
+            gk = new GenerateKeys(2048);
             gk.createKeys();
-            gk.writeToFile("KeyPair/publicKey", gk.getPublicKey().getEncoded());
-            gk.writeToFile("KeyPair/privateKey", gk.getPrivateKey().getEncoded());
+            gk.writeToFile("keys/public", gk.getPublicKey().getEncoded());
+            gk.writeToFile("keys/private", gk.getPrivateKey().getEncoded());
 
             return new KeyPair(gk.getPublicKey(), gk.getPrivateKey());
         } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
