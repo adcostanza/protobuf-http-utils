@@ -1,17 +1,16 @@
 package com.acostanza.utils.protobuf;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class HttpServiceUtil {
-    public static void main(String... args) {
-        generateService(args[0]);
-    }
-
-    public static void generateService(String protoLocation) {
+    /**
+     * generates the HttpService abstract class from protobuf rpc routes that enables making a quick and easy JSON HTTP API.
+     * @param protoLocation the location of the .proto file with rpc routes
+     */
+    public static void generateHttpService(String protoLocation) {
         List<ProtoReqRes> protoReqResList = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(protoLocation))) {
             String packageName = "";
@@ -50,7 +49,11 @@ public class HttpServiceUtil {
         }
     }
 
-    public static void generateHttpService(List<ProtoReqRes> reqResList) {
+    /**
+     * utility method that actually generates the code for the HttpService
+     * @param reqResList list of requests and responses parsed from the
+     */
+    private static void generateHttpService(List<ProtoReqRes> reqResList) {
         List<String> packageNames = reqResList
                 .stream()
                 .map(ProtoReqRes::getPackageName)
