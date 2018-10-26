@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class HttpServiceUtil {
+    public static void main(String... args) {
+        generateHttpService(args[0]);
+    }
+
     /**
      * generates the HttpService abstract class from protobuf rpc routes that enables making a quick and easy JSON HTTP API.
      * @param protoLocation the location of the .proto file with rpc routes
