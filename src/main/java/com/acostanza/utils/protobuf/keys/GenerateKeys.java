@@ -11,8 +11,12 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
-//Copied from https://www.mkyong.com/java/java-asymmetric-cryptography-example/
 
+/**
+ * these are to help remove the need to copy and paste these commonly used methods
+ * for public and private key generation in use with JWTs.
+ */
+//Copied from https://www.mkyong.com/java/java-asymmetric-cryptography-example/
 public class GenerateKeys {
     private KeyPairGenerator keyGen;
     private KeyPair pair;

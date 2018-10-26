@@ -8,7 +8,16 @@ import com.google.protobuf.util.JsonFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * all of the protohuf reflection lives here in order to validate all requests
+ */
 public class ProtoUtil {
+    /**
+     * creates a ProtoObject from a protobuf message
+     * @param proto the protobuf message
+     * @param <T> the protobuf message type
+     * @return a ProtoObject that is easier to use for validation
+     */
     public static <T extends GeneratedMessageV3> ProtoObject fromProto(T proto) {
         return ProtoObject.newBuilder()
                 .setIsMessage(true)
@@ -19,6 +28,12 @@ public class ProtoUtil {
                 .build();
     }
 
+    /**
+     * gets all of the child fields on a protobuf message
+     * @param proto the protobuf message to grab the child fields off of
+     * @param <T> the type of the protobuf message
+     * @return a list of ProtoObject, one for each child field
+     */
     private static <T extends GeneratedMessageV3> List<ProtoObject> getChildFields(T proto) {
         return proto.getDescriptorForType()
                 .getFields()
@@ -38,20 +53,50 @@ public class ProtoUtil {
                 }).collect(Collectors.toList());
     }
 
+    /**
+     * convert a json string into a protobuf message
+     * @param json the string to convert into a protobuf message
+     * @param builder the builder of the message to convert the json into
+     * @param <T> the class of the message that will be returned after conversion
+     * @return a protobuf message with its fields completed per the json string
+     * @throws InvalidProtocolBufferException
+     */
     public static <T extends GeneratedMessageV3> T fromJSON(String json, T.Builder builder) throws InvalidProtocolBufferException {
         JsonFormat.parser().ignoringUnknownFields().merge(json, builder);
         return (T) builder.build();
     }
 
+    /**
+     * convert protobuf message to a json string
+     * @param proto the protobuf message to convert
+     * @param <T> the class of the protobuf message to convert
+     * @return a JSON string with the fields of the protobuf message
+     * @throws InvalidProtocolBufferException
+     */
     public static <T extends GeneratedMessageV3> String toJSON(T proto) throws InvalidProtocolBufferException {
         return JsonFormat.printer().print(proto);
     }
 
+    /**
+     * convert protobuf message to a Map<String, Object>
+     * @param proto the protobuf message to convert
+     * @param <T> the class of the protobuf message to convert
+     * @return a Map<String,Object> equivalent to the protobuf message
+     * @throws InvalidProtocolBufferException
+     */
     public static <T extends GeneratedMessageV3> Map<String, Object> toMap(T proto) throws InvalidProtocolBufferException {
         Gson gson = new Gson();
         return (Map<String, Object>) gson.fromJson(toJSON(proto), Map.class);
     }
 
+    /**
+     * called by the ProtobufRequest to compare the request structure to the protobuf message structure
+     * @param map the request map that was converted from JSON
+     * @param proto the protobuf message to be compared against
+     * @param whiteListProperties the properties that can be ignored for values but not type
+     * @param <T> the type of the protobuf message to be compared against
+     * @throws InvalidProtocolBufferException if there are any errors during comparison
+     */
     public static <T extends GeneratedMessageV3> void compareRequestMapTypesToProtoTypes(Map<String, Object> map, T proto, List<String> whiteListProperties)
             throws InvalidProtocolBufferException {
         List<String> errors = new ArrayList<>();
@@ -64,6 +109,14 @@ public class ProtoUtil {
 
     }
 
+    /**
+     * utility method that checks each specific value and then recursively calls itself for child fields
+     * @param protoObject the protobuf message as a ProtoObject to compare against
+     * @param map the request map
+     * @param errors a list of running errors so we can collect errors rather than throwing before all errors are found
+     * @param path the path we are currently at in the protobuf message structure for proper error messages
+     * @param whitelistProperties any properties that should be ignored for values but not for type
+     */
     private static void checkValue(ProtoObject protoObject, Map<String, Object> map, List<String> errors, String path, List<String> whitelistProperties) {
         if (whitelistProperties.contains(protoObject.getName())) {
             return;
@@ -97,6 +150,13 @@ public class ProtoUtil {
         }
     }
 
+    /**
+     * check a specific property
+     * @param protoObject the proto object whose property will be compared against
+     * @param map the map that has the value to check
+     * @param errors running list of errors
+     * @param path the current path in the protobuf message structure
+     */
     private static void checkProperty(ProtoObject protoObject, Map<String, Object> map, List<String> errors, String path) {
         try {
             if (!map.get(protoObject.getName()).getClass().equals(protoObject.getType())) {
@@ -107,6 +167,14 @@ public class ProtoUtil {
         }
     }
 
+    /**
+     * check all of the child fields
+     * @param protoObject
+     * @param map the map that has the value to check
+     * @param errors running list of errors
+     * @param path the current path in the protobuf message structure
+     * @param whitelistProperties the properties that can be ignored if there is no value but not for type
+     */
     private static void checkChildFields(ProtoObject protoObject, Map<String, Object> map, List<String> errors, String path, List<String> whitelistProperties) {
         try {
             Map<String, Object> childMap = (Map<String, Object>) map.get(protoObject.getName());
@@ -128,6 +196,12 @@ public class ProtoUtil {
         }
     }
 
+    /**
+     * throw an error if there is a missing field, considering whether that missing field is a message itself or a primitive.
+     * @param protoObject the proto object that is of correct type
+     * @param errors a running list of errors
+     * @param path the current path to be descriptive in the error messages
+     */
     private static void errorMissingField(ProtoObject protoObject, List<String> errors, String path) {
         List<String> childProperties = protoObject.getChildFields()
                 .stream()
@@ -150,6 +224,13 @@ public class ProtoUtil {
         return;
     }
 
+    /**
+     * finds any extra inappropriate keys that are not a part of the message
+     * @param protoObject the proto object to compare against
+     * @param map the request map with the values to check
+     * @param errors a running list of errors
+     * @param path the current path for any future errors
+     */
     private static void findInappropriateKeys(ProtoObject protoObject, Map<String, Object> map, List<String> errors, String path) {
         Set<String> requestKeys = map.keySet();
         List<String> appropriateKeys = protoObject.getChildFields()

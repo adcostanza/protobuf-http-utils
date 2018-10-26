@@ -1,6 +1,8 @@
 package com.acostanza.utils.protobuf;
 
-//TODO RENAME THIS
+/**
+ * describes a protobuf request and response to aid in generating the HttpService by parsing the protobuf rpc routes
+ */
 public class ProtoReqRes {
     private String routeName;
     private String requestClassName;

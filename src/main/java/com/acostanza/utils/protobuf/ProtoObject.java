@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Custom data type to make it easier to use reflection on the protobuf objects for automatic type validation
+ */
 public class ProtoObject {
     boolean topLevelObject;
     private Descriptors.FieldDescriptor.Type protoType;
@@ -118,17 +121,6 @@ public class ProtoObject {
             topLevelObject = val;
             return this;
         }
-    }
-
-    public Map<String, Object> toMap() {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("type", type.toString());
-        map.put("value", value);
-        map.put("name", name);
-        map.put("isMessage", isMessage);
-        map.put("childFields", childFields.stream().map(ProtoObject::toMap).collect(Collectors.toList()));
-
-        return map;
     }
 
     public String nameTypePairString() {

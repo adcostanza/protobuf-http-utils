@@ -8,9 +8,11 @@ import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-
+/**
+ * these are to help remove the need to copy and paste these commonly used methods
+ * for public and private key generation in use with JWTs.
+ */
 //copied from https://www.mkyong.com/java/java-asymmetric-cryptography-example/
-
 public class AsymmetricCryptography {
 
     // https://docs.oracle.com/javase/8/docs/api/java/security/spec/PKCS8EncodedKeySpec.html
