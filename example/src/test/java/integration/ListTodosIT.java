@@ -5,16 +5,12 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import common.Base;
 import edu.emory.mathcs.backport.java.util.Collections;
 import org.junit.Test;
-import protos.Todo;
 import protos.listTodosResponse;
 import utils.Http;
 import utils.HttpTestResponse;
-import utils.JsonUtil;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;

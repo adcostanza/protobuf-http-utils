@@ -1,6 +1,5 @@
 package integration;
 
-import com.google.common.collect.Lists;
 import common.Base;
 import org.junit.Test;
 import utils.Http;

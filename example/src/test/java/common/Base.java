@@ -1,9 +1,7 @@
 package common;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import server.Server;
 import spark.Spark;
 

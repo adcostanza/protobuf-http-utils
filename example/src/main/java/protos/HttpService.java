@@ -1,7 +1,6 @@
 package protos;
 import com.acostanza.utils.protobuf.ReqRes;
 import com.acostanza.utils.protobuf.ServiceBinder;
-import protos.*;
 
 public abstract class HttpService {
 public final void bindService() { ServiceBinder.bindService(this); }
