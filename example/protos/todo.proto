@@ -5,7 +5,7 @@ option java_package = "protos";
 
 package protos;
 
-service AuthService {
+service TodoService {
     rpc createTodo (createTodoRequest) returns (Todo);
     rpc deleteTodo (deleteTodoRequest) returns (deleteTodoResponse);
     rpc listTodos (listTodosRequest) returns (listTodosResponse);
