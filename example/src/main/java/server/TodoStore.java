@@ -7,7 +7,11 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class TodoStore implements Store {
-    private List<Todo> todos = new ArrayList<>();
+    private static List<Todo> todos;
+
+    public TodoStore() {
+        todos = new ArrayList<>();
+    }
 
     @Override
     public Todo createTodo(String description) {
@@ -44,5 +48,6 @@ public class TodoStore implements Store {
     private static String createUUID() {
         return java.util.UUID.randomUUID().toString();
     }
+
 
 }

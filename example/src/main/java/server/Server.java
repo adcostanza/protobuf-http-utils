@@ -12,27 +12,30 @@ public class Server {
         Store store = new TodoStore();
 
         List<String> NO_AUTH_ROUTES = Arrays.asList(
-                "login",
-                "refresh",
-                "getPublicKey"
+                "listTodos"
         );
 
         Middleware basicAuthMiddleware = new Middleware((routeName, reqRes) -> {
             Request req = reqRes.getRequest();
+            //whitelisted routes
             if (NO_AUTH_ROUTES.contains(routeName)) {
                 return true;
             }
+
+            //don't do this, use a JWT...
             String token = req.headers("Authorization");
             if (token.equals("WNwqY5OngUNv3sioM68z46kA")) {
                 req.session().attribute("role", "admin");
+                return true;
             }
-            return true;
+
+            //unauthorized
+            return false;
         });
-        //TODO add admin middleware
 
         ServiceMiddleware.intercept(basicAuthMiddleware);
 
-       TodoService service = new TodoService(store);
+        TodoService service = new TodoService(store);
         service.bindService();
     }
 
