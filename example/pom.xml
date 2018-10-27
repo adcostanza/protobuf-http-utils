@@ -24,7 +24,6 @@
 
     <build>
         <plugins>
-
             <plugin>
                 <groupId>com.github.os72</groupId>
                 <artifactId>protoc-jar-maven-plugin</artifactId>
@@ -36,11 +35,9 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <!-- <includeDirectories> <include>src/main/protobuf</include> </includeDirectories> -->
                             <inputDirectories>
                                 <include>protos</include>
                             </inputDirectories>
-                            <!-- Create java files. And put them in the src/main/java directory. -->
                             <outputTargets>
                                 <outputTarget>
                                     <type>java</type>
