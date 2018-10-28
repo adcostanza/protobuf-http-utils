@@ -24,7 +24,6 @@ public class ProtobufRequest<T extends GeneratedMessageV3, R extends GeneratedMe
     private String name;
     private BiFunction<ReqRes, T, R> serviceBiFunction;
     private List<String> whitelistProperties;
-    private T.Builder emptyRequestBuilder;
     private Class<T> requestClass;
 
     /**
@@ -41,13 +40,7 @@ public class ProtobufRequest<T extends GeneratedMessageV3, R extends GeneratedMe
         this.name = name;
         this.serviceBiFunction = serviceBiFunction;
         this.whitelistProperties = Arrays.asList(whitelistProperties);
-
-        try {
-            Method newBuilderMethod = requestClass.getMethod("newBuilder");
-            emptyRequestBuilder = (T.Builder) newBuilderMethod.invoke(null);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+        this.requestClass = requestClass;
 
         addToService();
     }
@@ -62,7 +55,14 @@ public class ProtobufRequest<T extends GeneratedMessageV3, R extends GeneratedMe
      */
     private void addToService() {
         Spark.post(getName(), (req, res) -> {
-            emptyRequestBuilder = emptyRequestBuilder.clear();
+            T.Builder emptyRequestBuilder;
+            try {
+                Method newBuilderMethod = requestClass.getMethod("newBuilder");
+                emptyRequestBuilder = (T.Builder) newBuilderMethod.invoke(null);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+
             Gson gson = new Gson();
             ReqRes reqRes = new ReqRes(req, res);
             try {
