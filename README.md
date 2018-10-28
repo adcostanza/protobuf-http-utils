@@ -10,7 +10,7 @@ First, put the following in your POM to get this dependency:
 <dependency>
     <groupId>com.acostanza</groupId>
     <artifactId>protobuf-http-utils</artifactId>
-    <version>0.0.12</version>
+    <version>0.0.13</version>
 </dependency>
 ``` 
 
