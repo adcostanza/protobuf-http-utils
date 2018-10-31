@@ -14,10 +14,13 @@ import java.util.stream.Stream;
  * Uses reflection to bind all of the user defined business logic to a real HTTP service automatically.
  */
 public class ServiceBinder {
+    private static boolean serviceBound = false;
+
     /**
      * called from the HttpService abstract class, this creates BiFunctions based on the
      * user defined service that extends the HttpService and passes that BiFunction and route information
      * to the ProtobufRequest which creates a POST route automatically for us.
+     *
      * @param service the service to bind
      */
     public static void bindService(Object service) {
@@ -48,5 +51,16 @@ public class ServiceBinder {
                             serviceBiFunction);
                 })
                 .collect(Collectors.toList());
+        serviceBound = true;
+    }
+
+    public static void waitForService() {
+        try {
+            while (!serviceBound) {
+                Thread.sleep(100);
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
